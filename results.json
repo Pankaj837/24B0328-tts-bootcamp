@@ -23,12 +23,12 @@
     "val_control_cer": 0.302
   },
   "task4": {
-    "method_name": "",
-    "settings": {},
-    "val_cer": null,
-    "baseline_seconds": null,
-    "fast_seconds": null,
-    "speedup": null
+    "method_name": "Task 3 system (normalize()+translit_text()) with nfe_step halved (32 -> 16)",
+    "settings": {"nfe_step": 16},
+    "val_cer": 0.074,
+    "baseline_seconds": 575.2,
+    "fast_seconds": 304.6,
+    "speedup": 1.89
   },
   "_help": {
     "numbers": "All CER/SIM values are what metrics.py prints on the validation audio you submit. Leave null for tasks you skip.",
@@ -36,5 +36,5 @@
     "targeted_category": "The item category your Task 3 score is computed on: hindi, hinglish, hard or long",
     "speedup": "baseline_seconds / fast_seconds, from run_baseline.py timing files made on the same machine in the same session"
   },
-  "_pending": "Task 1-3 numbers are real, from a Kaggle GPU run (seed 0), verified against the actual metrics.py output. Task 4 is optional and not yet attempted -- will fill in if there's time before the deadline. task3.val_control_cer (0.302) is cer_by_category.hinglish from val_control.json (Task 2 text only, builds_on_task2=true), matched exactly against task3.val_cer_targeted (0.0692, Task 2+3 text) to isolate Task 3's own contribution: a 77% relative reduction on the targeted category."
+  "_pending": "All numbers are real, from Kaggle GPU runs (seed 0), verified against actual metrics.py/run_baseline.py output. task3.val_control_cer (0.302) is cer_by_category.hinglish from val_control.json (Task 2 text only, builds_on_task2=true), matched against task3.val_cer_targeted (0.0692, Task 2+3 text): a 77% relative reduction on the targeted category. task4.baseline_seconds/fast_seconds are from run_baseline.py's timing files (out/baseline_val_timing.json, out/t4_fast_val_timing.json), both measured in the same Kaggle session for a fair ratio; task4.val_cer (0.074) is within the required 1.2x ceiling of task3.val_cer (0.0649 x 1.2 = 0.0779)."
 }
