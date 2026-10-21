@@ -23,10 +23,15 @@ Patterns used, in the order they fire on a lowercase word:
   9. default single-letter consonant/vowel table, tuned to Indian-English conventions (t/d are
      retroflex ट/ड, not dental त/द; bare "o" defaults to the short ऑ as in office/shopping/proper).
      "y" is vocalic everywhere except word-initial position (party/battery keep their vowel "y";
-     yoga/yes get a leading य), handled as an explicit special case rather than a dictionary entry
-     so it can't be swept into the word-final coda-cluster rule the way a plain entry would (that
-     broke "battery"/"party" during review -- caught by rerunning the regression test after the
-     change, before it ever reached a submission).
+     yoga/yes get a leading य), handled as an explicit special case rather than a dictionary entry,
+     since adding "y" to the plain consonant table caused it to be swept into other rules that key
+     off that table and broke "battery"/"party" -- caught by rerunning the regression test before
+     it ever reached a submission.
+
+A word-final 2-consonant coda cluster (report/confirm/password-style endings) is deliberately left
+unclustered (no halant), even though common loanwords like पोस्ट/कार्ड would normally cluster it --
+an earlier version of this rule was dropped because it was motivated by looking at evaluation-only
+words, which the task rules don't allow; see idea.md and code/README.md for the full account.
 
 Known, documented limitation (see idea.md / report.md): English spelling alone does not mark word
 stress or vowel reduction, so unstressed vowels are sometimes written when a fluent Hindi rendering
@@ -218,13 +223,6 @@ def translit_word(word: str) -> str:
         if ch == "g":
             soft = (i + 1 < n and w[i + 1] in "eiy") or (i == n - 1 and force_soft_final)
             writer.consonant("ज" if soft else "ग"); i += 1; continue
-        # a word-final 2-consonant coda clusters with a halant, the way common loanwords do
-        # (पोस्ट, कार्ड, पार्ट, फास्ट) -- unlike a medial cluster like internet's "rn", which Hindi
-        # leaves separate with an implicit vowel between.
-        if ch in _CONSONANTS and i + 2 == n and w[i + 1] in _CONSONANTS:
-            writer.consonant(_CONSONANTS[ch])
-            writer.consonant(_CONSONANTS[w[i + 1]], cluster_with_prev=True)
-            i += 2; continue
         if ch in _CONSONANTS:
             writer.consonant(_CONSONANTS[ch]); i += 1; continue
         i += 1  # unknown character, skip

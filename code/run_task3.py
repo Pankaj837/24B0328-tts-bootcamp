@@ -60,6 +60,9 @@ def main():
     ap.add_argument("--eval-items", default=str(KIT / "data" / "eval_items.csv"))
     ap.add_argument("--prompts", default=str(KIT / "data" / "prompts.csv"))
     ap.add_argument("--out", default=str(KIT / "predictions"))
+    ap.add_argument("--skip-val", action="store_true",
+                     help="skip val_control/ and val_idea/ (e.g. when only eval text changed "
+                          "and the validation-side numbers are already known to be unaffected)")
     a = ap.parse_args()
 
     val_items = read_csv(a.val_items)
@@ -79,11 +82,13 @@ def main():
     engine("नमस्ते, यह एक छोटा सा परीक्षण है।", prompts[val_items[0]["prompt_id"]]["path"],
            prompts[val_items[0]["prompt_id"]]["transcript"], seed=a.seed)
 
-    print("\n== val_control/ (Task 2 text only) ==")
-    c_total, c_per = synth_set(engine, val_items, prompts, control_text, out / "val_control", a.seed)
+    c_total, c_per, v_total, v_per = 0.0, {}, 0.0, {}
+    if not a.skip_val:
+        print("\n== val_control/ (Task 2 text only) ==")
+        c_total, c_per = synth_set(engine, val_items, prompts, control_text, out / "val_control", a.seed)
 
-    print("\n== val_idea/ (Task 2 + Task 3 text) ==")
-    v_total, v_per = synth_set(engine, val_items, prompts, idea_text, out / "val_idea", a.seed)
+        print("\n== val_idea/ (Task 2 + Task 3 text) ==")
+        v_total, v_per = synth_set(engine, val_items, prompts, idea_text, out / "val_idea", a.seed)
 
     print("\n== t3_idea/ (Task 2 + Task 3 text, evaluation items) ==")
     e_total, e_per = synth_set(engine, eval_items, prompts, idea_text, out / "t3_idea", a.seed)
@@ -93,11 +98,14 @@ def main():
               "t3_idea_s": round(e_total, 3), "val_control_per_item_s": c_per,
               "val_idea_per_item_s": v_per, "t3_idea_per_item_s": e_per}
     (out / "task3_timing.json").write_text(json.dumps(timing, indent=1, ensure_ascii=False), encoding="utf-8")
-    print(f"\nDone. val_control/ ({len(val_items)} files), val_idea/ ({len(val_items)} files), "
-          f"t3_idea/ ({len(eval_items)} files) written under {out}.")
-    print("Next: python metrics.py predictions/val_control --json val_control.json --csv val_control.csv")
-    print("      python metrics.py predictions/val_idea --json val_idea.json --csv val_idea.csv")
-    print("      fill task3.val_cer / val_control_cer / val_cer_targeted / val_sim into results.json")
+    if a.skip_val:
+        print(f"\nDone. t3_idea/ ({len(eval_items)} files) written under {out} (val_control/val_idea skipped).")
+    else:
+        print(f"\nDone. val_control/ ({len(val_items)} files), val_idea/ ({len(val_items)} files), "
+              f"t3_idea/ ({len(eval_items)} files) written under {out}.")
+        print("Next: python metrics.py predictions/val_control --json val_control.json --csv val_control.csv")
+        print("      python metrics.py predictions/val_idea --json val_idea.json --csv val_idea.csv")
+        print("      fill task3.val_cer / val_control_cer / val_cer_targeted / val_sim into results.json")
 
 
 if __name__ == "__main__":
