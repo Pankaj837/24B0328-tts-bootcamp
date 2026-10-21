@@ -22,6 +22,11 @@ Patterns used, in the order they fire on a lowercase word:
      naturally breaks unfamiliar clusters with an implicit short vowel (इंटरनेट).
   9. default single-letter consonant/vowel table, tuned to Indian-English conventions (t/d are
      retroflex ट/ड, not dental त/द; bare "o" defaults to the short ऑ as in office/shopping/proper).
+     "y" is vocalic everywhere except word-initial position (party/battery keep their vowel "y";
+     yoga/yes get a leading य), handled as an explicit special case rather than a dictionary entry
+     so it can't be swept into the word-final coda-cluster rule the way a plain entry would (that
+     broke "battery"/"party" during review -- caught by rerunning the regression test after the
+     change, before it ever reached a submission).
 
 Known, documented limitation (see idea.md / report.md): English spelling alone does not mark word
 stress or vowel reduction, so unstressed vowels are sometimes written when a fluent Hindi rendering
@@ -36,13 +41,13 @@ _CONSONANTS = {
     "b": "ब", "d": "ड", "f": "फ", "h": "ह", "j": "ज", "k": "क", "l": "ल", "m": "म",
     "n": "न", "p": "प", "r": "र", "s": "स", "t": "ट", "v": "व", "w": "व", "x": "क्स", "z": "ज़",
 }
+# "y" is deliberately NOT in _CONSONANTS: at word end or mid-word it is vocalic (party, happy,
+# type) far more often than not, and the word-final coda-cluster rule below keys off _CONSONANTS
+# membership, so adding "y" there would wrongly cluster "ry"/"ty" endings. Word-initial "y" (yoga,
+# yes) is the one place it is reliably consonantal, handled as an explicit special case instead.
 _ONSET_CLUSTERS = {
     "bl", "br", "cl", "cr", "dr", "fl", "fr", "gl", "gr", "pl", "pr",
     "sc", "sk", "sl", "sm", "sn", "sp", "st", "sw", "tr", "tw",
-}
-_DIGRAPHS = {  # checked before single letters; single Hindi sound each
-    "tion": "शन", "sion": "ज़न", "igh": ("AI_SHORT", None),  # handled specially below
-    "sh": "श", "ch": "च", "ph": "फ़", "wh": "व", "ck": "क", "qu": "क्व",
 }
 _VOWEL_MATRA = {"a": "", "aa": "ा", "i": "ि", "ii": "ी", "u": "ु", "uu": "ू",
                 "e": "े", "ai": "ै", "o": "ो", "au": "ॉ", "ow": "ौ"}
@@ -148,8 +153,11 @@ def translit_word(word: str) -> str:
                 writer.anusvara(); writer.consonant("ग"); i += 2; continue
             writer.consonant(base[pair]); i += 2; continue
 
-        if ch in "aeiouy" or (ch == "y" and i > 0):
-            # --- vowel handling ---
+        if ch == "y" and i == 0:
+            writer.consonant("य"); i += 1; continue
+
+        if ch in "aeiou" or ch == "y":
+            # --- vowel handling --- (word-initial y was already consumed as a consonant above)
             if w[i:i + 2] == "ee":
                 writer.vowel("ii"); i += 2; continue
             if w[i:i + 2] == "ea":
