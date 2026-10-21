@@ -2,7 +2,9 @@
 
 AI assistant disclosure: this submission's code, text frontend, and transliteration rules were
 developed with Claude (Anthropic) as a coding assistant, working interactively with me in this
-repository. idea.md and report.md are my own words and judgement calls, not generated text.
+repository. idea.md and report.md's judgement calls, analysis and results are mine; Claude
+rephrased the actual wording from the real numbers and decisions produced in that work, at my
+direction.
 
 Run everything from the kit root. Steps marked **[Kaggle]** were run on a Kaggle notebook (Task 1:
 CPU session, no GPU/HF token needed, since `metrics.py` only uses public Whisper/ECAPA models;
