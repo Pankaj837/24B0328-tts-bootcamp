@@ -1,10 +1,10 @@
 {
   "roll_no": "24B0328",
-  "machine": "Kaggle/Colab GPU (exact name TBD once run)",
+  "machine": "Kaggle (Task 1: CPU session); Task 2-4 TBD once run on GPU",
   "seed": 0,
   "task1": {
-    "val_cer": null,
-    "val_sim": null
+    "val_cer": 0.2409,
+    "val_sim": 0.8303
   },
   "task2": {
     "val_cer": null,

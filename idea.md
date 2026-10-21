@@ -1,8 +1,8 @@
 (1) Failure: hinglish items (2-4 English words in Latin script inside a Hindi sentence) score
-CER 0.302 in data/baseline_published.json, second-worst after hard's number errors. IndicF5 reads
-the Latin words with Hindi grapheme rules and mangles them. Target: english_word_error. Items:
-val_hg_01, val_hg_03 (office/internet/slow; flight/cancel/hotel — several English words each).
-[PENDING: replace with real Task 1 items]
+CER 0.302, second-worst after hard's number errors. IndicF5 reads the Latin words with Hindi
+grapheme rules and mangles them. Target: english_word_error. Worst two by measured CER:
+val_hg_01, CER 0.452 ("office/internet/slow" -> ASR heard "हैंसे/सर्ण/कोह", not close); val_hg_06,
+CER 0.318 ("weekend/movie/shopping" -> "वियन/अहीं/चहें").
 
 (2) Method: code/translit.py rewrites embedded English words to Devanagari before synthesis, using
 hand-written spelling-pattern rules (onset/coda consonant clusters, magic-e vowel lengthening,
