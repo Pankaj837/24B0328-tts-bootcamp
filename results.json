@@ -1,26 +1,26 @@
 {
   "roll_no": "24B0328",
-  "machine": "Kaggle (Task 1: CPU session); Task 2-4 TBD once run on GPU",
+  "machine": "Kaggle (Task 1: CPU session; Task 2-3: GPU T4 session)",
   "seed": 0,
   "task1": {
     "val_cer": 0.2409,
     "val_sim": 0.8303
   },
   "task2": {
-    "val_cer": null,
-    "val_sim": null,
-    "val_cer_hard": null
+    "val_cer": 0.1231,
+    "val_sim": 0.8371,
+    "val_cer_hard": 0.0989
   },
   "task3": {
     "method_name": "Rule-based English-to-Devanagari transliteration of words embedded in hinglish text (code/translit.py)",
     "targeted_failure": "english_word_error",
     "targeted_category": "hinglish",
-    "builds_on_task2": false,
+    "builds_on_task2": true,
     "settings": {},
-    "val_cer": null,
-    "val_sim": null,
-    "val_cer_targeted": null,
-    "val_control_cer": null
+    "val_cer": 0.0649,
+    "val_sim": 0.838,
+    "val_cer_targeted": 0.0692,
+    "val_control_cer": 0.302
   },
   "task4": {
     "method_name": "",
@@ -36,5 +36,5 @@
     "targeted_category": "The item category your Task 3 score is computed on: hindi, hinglish, hard or long",
     "speedup": "baseline_seconds / fast_seconds, from run_baseline.py timing files made on the same machine in the same session"
   },
-  "_pending": "Every null above needs the Kaggle/Colab GPU run (RUN_ON_KAGGLE.md) before this can be finalized. task3.settings is {} because the idea only changes input text, not decoding settings. task3.builds_on_task2 is set to false for now (not yet run) -- it will flip to true once we actually run Task 3 combining normalize()+translit_text() and submit val_control/ alongside it; val_control_cer will then be cer_by_category.hinglish from val_control.json (Task 2 text only), to isolate Task 3's own contribution from Task 2's."
+  "_pending": "Task 1-3 numbers are real, from a Kaggle GPU run (seed 0), verified against the actual metrics.py output. Task 4 is optional and not yet attempted -- will fill in if there's time before the deadline. task3.val_control_cer (0.302) is cer_by_category.hinglish from val_control.json (Task 2 text only, builds_on_task2=true), matched exactly against task3.val_cer_targeted (0.0692, Task 2+3 text) to isolate Task 3's own contribution: a 77% relative reduction on the targeted category."
 }
